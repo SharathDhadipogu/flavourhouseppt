@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Flavour House - Presentation Deck</title>
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-orange: #F97316;
+            --brand-dark: #F8FAFC;
+            --brand-navy: #E2E8F0;
+            --brand-light: #FFEDD5;
+            --text-light: #0F172A;
+            --text-dim: #475569;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --accent-yellow: #F59E0B;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --border-glass: rgba(15, 23, 42, 0.08);
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #FFF7ED, #F8FAFC 70%);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* --- HEADER & NAVIGATION CONTROLS --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-glass);
+            z-index: 100;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--brand-orange), #EA580C);
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #0F172A, var(--brand-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- TIMER --- */
+        .timer-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid var(--border-glass);
+            padding: 8px 18px;
+            border-radius: 30px;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+        }
+
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            transition: color 0.3s ease;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .timer-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Color thresholds for the timer */
+        .timer-warning {
+            color: var(--accent-yellow) !important;
+            animation: pulse-yellow 1s infinite alternate;
+        }
+
+        .timer-danger {
+            color: var(--accent-red) !important;
+            animation: pulse-red 0.5s infinite alternate;
+        }
+
+        @keyframes pulse-yellow {
+            from { opacity: 0.7; } to { opacity: 1; }
+        }
+        @keyframes pulse-red {
+            from { opacity: 0.5; } to { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* --- MAIN SLIDES WINDOW --- */
+        .slides-container {
+            flex: 1;
+            position: relative;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 1280px;
+            height: 80%;
+            opacity: 0;
+            transform: scale(0.96) translateY(20px);
+            pointer-events: none;
+            transition: opacity var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Slide Transition Animations & Sequencing */
+        .slide .slide-header,
+        .slide .slide-body > * {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active .slide-header {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.1s;
+        }
+
+        .slide.active .slide-body > * {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.3s;
+        }
+
+        /* Slide 5 Walkthrough Grid staggered image animations */
+        #slide-5 .screenshot-box {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #slide-5.active .screenshot-box {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        #slide-5.active .screenshot-box:nth-child(1) { transition-delay: 0.2s; }
+        #slide-5.active .screenshot-box:nth-child(2) { transition-delay: 0.35s; }
+        #slide-5.active .screenshot-box:nth-child(3) { transition-delay: 0.5s; }
+        #slide-5.active .screenshot-box:nth-child(4) { transition-delay: 0.65s; }
+        #slide-5.active .screenshot-box:nth-child(5) { transition-delay: 0.8s; }
+        #slide-5.active .screenshot-box:nth-child(6) { transition-delay: 0.95s; }
+
+        .slide-header {
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(249, 115, 22, 0.2);
+            padding-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .slide-title-area h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0F172A 60%, var(--brand-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .slide-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-top: 3px;
+        }
+
+        .slide-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: rgba(249, 115, 22, 0.4);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            gap: 30px;
+            overflow: hidden;
+        }
+
+        /* --- FOOTER CONTROLS --- */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-top: 1px solid var(--border-glass);
+        }
+
+        .progress-container {
+            flex: 1;
+            max-width: 50%;
+            height: 6px;
+            background: var(--brand-navy);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-right: 40px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 11.11%;
+            background: linear-gradient(to right, var(--brand-orange), #FF8C3A);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .slide-counter {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-right: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: var(--brand-navy);
+            border: 1px solid var(--border-glass);
+            color: var(--text-light);
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--brand-orange);
+            color: white;
+            border-color: var(--brand-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* --- INDIVIDUAL SLIDES LAYOUTS --- */
+        
+        /* Slide 1: Intro */
+        .intro-hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .intro-tagline {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: var(--text-light);
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .intro-badge {
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            color: var(--brand-orange);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .intro-skip-hint {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 15px;
+            background: rgba(255,255,255,0.03);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        /* Slide 2: Tech Stack Grid */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .tech-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--brand-orange);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(249, 115, 22, 0.3);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .tech-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 10px;
+        }
+
+        .tech-icon {
+            font-size: 1.5rem;
+        }
+
+        .tech-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .tech-details {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Slide 3: Structure */
+        .struct-left {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-y: auto;
+            max-height: 100%;
+        }
+
+        .struct-right {
+            width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .struct-explanation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--brand-orange);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .struct-exp-title {
+            font-weight: 700;
+            color: var(--brand-orange);
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .struct-exp-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Slide 4: ER Diagram Table Connections */
+        .er-layout {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .er-list-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .er-table-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .er-table-card:hover {
+            border-color: rgba(249, 115, 22, 0.4);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .er-table-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .er-table-name span {
+            color: var(--brand-orange);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+        }
+
+        .er-column {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            padding: 3px 0;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+        }
+
+        .er-column.pk {
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        .er-column.fk {
+            color: var(--brand-orange);
+            font-weight: 600;
+        }
+
+        .er-side-info {
+            width: 320px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .er-side-heading {
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .er-rel-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.8rem;
+            background: rgba(255,255,255,0.02);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .er-rel-conn {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--brand-orange);
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Slide 5: Screenshots Placeholder Grid */
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .screenshot-box {
+            background: rgba(15, 23, 42, 0.7);
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshot-box:hover {
+            border-color: var(--brand-orange);
+            background: rgba(249, 115, 22, 0.03);
+        }
+
+        .screenshot-box.has-img {
+            border-style: solid;
+            border-color: var(--border-glass);
+            padding: 0;
+        }
+
+        .screenshot-placeholder-icon {
+            font-size: 2rem;
+            color: var(--brand-orange);
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
+
+        .screenshot-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .screenshot-desc {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+
+        .screenshot-file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .screenshot-img-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: rgba(15, 23, 42, 0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .screenshot-box-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            border-top: 1px solid var(--border-glass);
+            z-index: 4;
+        }
+
+        /* Slide 6: Features Added Cards */
+        .feat-layout {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .feat-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--brand-orange);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .feat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(249, 115, 22, 0.4);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .feat-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            align-self: flex-start;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .feat-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-light);
+        }
+
+        .feat-desc {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .feat-bullets {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .feat-bullets li {
+            list-style: none;
+            display: flex;
+            gap: 8px;
+        }
+
+        .feat-bullets li::before {
+            content: "✦";
+            color: var(--brand-orange);
+            font-weight: bold;
+        }
+
+        /* Slide 7: Algorithms Code Tabs */
+        .algo-layout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+
+        .algo-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 8px;
+        }
+
+        .algo-tab-btn {
+            background: var(--brand-navy);
+            border: 1px solid var(--border-glass);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .algo-tab-btn.active {
+            background: var(--brand-orange);
+            color: white;
+            border-color: var(--brand-orange);
+        }
+
+        .algo-content {
+            flex: 1;
+            display: none;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .algo-content.active {
+            display: flex;
+        }
+
+        .algo-code-box {
+            flex: 1.3;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 15px;
+            overflow: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            white-space: pre;
+            color: #A9B2C3;
+        }
+
+        .algo-info-panel {
+            flex: 0.7;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .algo-point {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-left: 4px solid var(--brand-orange);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .algo-point-title {
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        /* Slide 8: Challenges faced split view */
+        .challenge-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        .challenge-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .challenge-panel.left {
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .challenge-panel.right {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .challenge-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 10px;
+        }
+
+        .challenge-icon {
+            font-size: 1.5rem;
+        }
+
+        .challenge-body-text {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Slide 9: Next Features Timeline Roadmap */
+        .roadmap-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            padding: 0 40px;
+        }
+
+        .roadmap-line {
+            position: absolute;
+            top: 50%;
+            left: 80px;
+            right: 80px;
+            height: 4px;
+            background: var(--brand-navy);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .roadmap-node {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 220px;
+            text-align: center;
+        }
+
+        .roadmap-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--brand-dark);
+            border: 4px solid var(--brand-orange);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(249,115,22,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-node:hover .roadmap-dot {
+            transform: scale(1.3);
+            background: var(--brand-orange);
+        }
+
+        .roadmap-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 6px;
+        }
+
+        .roadmap-desc {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- --- APP HEADER --- -->
+    <header>
+        <div class="logo-section">
+            <div class="logo-badge">F</div>
+            <div class="project-title">The Flavour House — Presentation</div>
+        </div>
+
+        <!-- Float-capable Interactive timer -->
+        <div class="timer-container">
+            <span class="timer-label">PRESENTATION TIMER</span>
+            <div class="timer-display" id="onscreen-timer">04:00</div>
+            <button class="timer-btn" id="timer-toggle-btn" title="Start/Pause Presentation Timer">▶</button>
+            <button class="timer-btn" id="timer-reset-btn" title="Reset presentation timer">🔄</button>
+        </div>
+    </header>
+
+    <!-- --- SLIDES WINDOW --- -->
+    <div class="slides-container">
+
+        <!-- SLIDE 1: Project Intro -->
+        <div class="slide active" id="slide-1">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>01 · Project Intro</h2>
+                    <p class="slide-subtitle">A quick introduction to the application objective</p>
+                </div>
+                <div class="slide-number">01 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="intro-hero" style="flex: 0.8; text-align: left; align-items: flex-start; justify-content: center; gap: 15px;">
+                    <span class="intro-badge">Food Ordering & Delivery App</span>
+                    <h3 class="intro-tagline" style="font-size: 1.4rem; line-height: 1.4;">
+                        "The Flavour House is a premium food ordering and delivery web application that connects customers with local heritage kitchens, featuring custom dynamic carts and real-time session coupons."
+                    </h3>
+                    <div class="intro-skip-hint" style="margin-top: 10px;">
+                        💡 <strong>Presentation Tip:</strong> If presenting the standard project structure, you may optionally skip this slide to save time!
+                    </div>
+                </div>
+                <div class="screenshot-box" style="flex: 1.2; height: 100%; border-style: dashed; border-width: 2px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <span class="screenshot-placeholder-icon">🏠</span>
+                    <div class="screenshot-title">Project Intro Dashboard</div>
+                    <div class="screenshot-desc">Click here to upload an introduction image or logo illustration screenshot</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: Tech Stack -->
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>02 · Technology Stack</h2>
+                    <p class="slide-subtitle">Languages, core frameworks, database engines, and design methodologies</p>
+                </div>
+                <div class="slide-number">02 / 09</div>
+            </div>
+            <div class="slide-body" style="align-items: center;">
+                <div class="tech-grid">
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-icon">💻</span>
+                            <span class="tech-name">Frontend System</span>
+                        </div>
+                        <p class="tech-details">Built with HTML5, JavaScript (ES6+), and Vanilla CSS3. Utilizes a modular design token architecture, responsive variables, custom blur filters, glassmorphic grids, and CSS transition animations.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-icon">☕</span>
+                            <span class="tech-name">Java MVC Backend</span>
+                        </div>
+                        <p class="tech-details">Driven by Java Servlets (Jakarta EE) handling URL routing and transactional logic, working with JSPs (JavaServer Pages) providing state-aware presentation rendering.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-icon">🗄️</span>
+                            <span class="tech-name">Database Layer</span>
+                        </div>
+                        <p class="tech-details">Powered by MySQL. Employs a fully normalized relational schema, primary/foreign key connections, index paths, and handles queries via standard JDBC connection drivers.</p>
+                    </div>
+
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-icon">⚙️</span>
+                            <span class="tech-name">Server & Tools</span>
+                        </div>
+                        <p class="tech-details">Hosted locally using Apache Tomcat Server. Compiled, structured, and managed inside the Eclipse IDE environment, with version control managed via Git and GitHub.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: Project Structure -->
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>03 · Project Structure</h2>
+                    <p class="slide-subtitle">MVC folder organizational map showing the division of code roles</p>
+                </div>
+                <div class="slide-number">03 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="screenshot-box has-img" style="flex: 1.3; height: 100%; border-style: solid; border-width: 1px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <img class="screenshot-img-preview" src="screenshots/project_directory.png">
+                    <div class="screenshot-box-label">Project Structure Directory</div>
+                </div>
+                <div class="struct-right" style="flex: 0.7; height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 15px;">
+                    <div class="struct-explanation-card">
+                        <h4 class="struct-exp-title">📂 MVC Package Architecture</h4>
+                        <p class="struct-exp-text">Strict division of responsibilities ensures maintainability. Standard Models map directly to MySQL tables, while DAO layers decouple the business code from JDBC statements.</p>
+                    </div>
+                    <div class="struct-explanation-card">
+                        <h4 class="struct-exp-title">📂 Web Assets separation</h4>
+                        <p class="struct-exp-text">JSP files retrieve session profiles and execute server-side checks, leaving high-performance UI state manipulations (like Cart caching) to vanilla JavaScript.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: ER Diagram -->
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>04 · Database Schema (ER Diagram)</h2>
+                    <p class="slide-subtitle">Normalized relational layout with primary and foreign key mapping</p>
+                </div>
+                <div class="slide-number">04 / 09</div>
+            </div>
+            <div class="slide-body" style="justify-content: center; align-items: center; padding: 10px;">
+                <div class="screenshot-box has-img" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-style: solid; border-width: 1px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <img class="screenshot-img-preview" src="screenshots/er_diagram.png" style="max-height: 100%; width: 100%; object-fit: contain;">
+                    <div class="screenshot-box-label">Database ER Diagram</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Page Screenshots -->
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>05 · Application Page Walkthrough</h2>
+                    <p class="slide-subtitle">Visual workflow in order of customer interaction (Click boxes to upload screenshots)</p>
+                </div>
+                <div class="slide-number">05 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="screenshot-grid">
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/home_page.png">
+                        <div class="screenshot-box-label">1. Home / Restaurant Catalog</div>
+                    </div>
+
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/menu_page.png">
+                        <div class="screenshot-box-label">2. Restaurant Menu Selection</div>
+                    </div>
+
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/cart_page.png">
+                        <div class="screenshot-box-label">3. Interactive Cart & Coupons</div>
+                    </div>
+
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/ordersuccess_page.png">
+                        <div class="screenshot-box-label">4. Order Success Confirmed</div>
+                    </div>
+
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/orders_page.png">
+                        <div class="screenshot-box-label">5. Orders Ledger List</div>
+                    </div>
+
+                    <div class="screenshot-box has-img">
+                        <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                        <img class="screenshot-img-preview" src="screenshots/login_page.png">
+                        <div class="screenshot-box-label">6. User Security Screens</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: New Features You Added -->
+        <div class="slide" id="slide-6">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>06 · New Features Added</h2>
+                    <p class="slide-subtitle">Additional custom architectures differentiating this deployment</p>
+                </div>
+                <div class="slide-number">06 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="feat-layout" style="flex: 0.8; display: flex; flex-direction: column; gap: 12px; height: 100%; overflow-y: auto; padding-right: 5px;">
+                    <div class="feat-card" style="padding: 15px; flex-shrink: 0;">
+                        <span class="feat-badge">Session & AJAX</span>
+                        <h3 class="feat-title" style="font-size: 1.1rem;">🎟️ Active Coupon Management</h3>
+                        <p class="feat-desc" style="font-size: 0.8rem; line-height: 1.4;">Developed a session-based promotional coupon engine integrating discount variables dynamically at check-out calculations (ApplyCouponServlet).</p>
+                    </div>
+                    <div class="feat-card" style="padding: 15px; flex-shrink: 0;">
+                        <span class="feat-badge">State Caching</span>
+                        <h3 class="feat-title" style="font-size: 1.1rem;">⚡ Client-Side Cart Engine</h3>
+                        <p class="feat-desc" style="font-size: 0.8rem; line-height: 1.4;">Moved high-frequency cart addition and subtraction modifications to a persistent browser storage engine, optimizing response speed.</p>
+                    </div>
+                    <div class="feat-card" style="padding: 15px; flex-shrink: 0;">
+                        <span class="feat-badge">UI/UX</span>
+                        <h3 class="feat-title" style="font-size: 1.1rem;">✨ Glassmorphic Layout Theme</h3>
+                        <p class="feat-desc" style="font-size: 0.8rem; line-height: 1.4;">Crafted custom layout style variables replacing plain, generic HTML blocks with rich modern styles.</p>
+                    </div>
+                </div>
+                <div class="screenshot-box has-img" style="flex: 1.2; height: 100%; border-style: solid; border-width: 1px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <img class="screenshot-img-preview" src="screenshots/cart_page.png">
+                    <div class="screenshot-box-label">New Features (Applied Coupon)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: Important Algorithms -->
+        <div class="slide" id="slide-7">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>07 · Core Algorithms Showcase</h2>
+                    <p class="slide-subtitle">Implementation segments bridging client-side caching with relational databases</p>
+                </div>
+                <div class="slide-number">07 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="algo-layout">
+                    <div class="algo-tabs">
+                        <button class="algo-tab-btn active" onclick="switchAlgo(0)">1. JavaScript Cart Serializer</button>
+                        <button class="algo-tab-btn" onclick="switchAlgo(1)">2. Java Transaction & ID Fetch</button>
+                    </div>
+
+                    <!-- Tab 1 Code -->
+                    <div class="algo-content active" id="algo-c-0">
+                        <div class="algo-code-box">
+// In cart.jsp: Serializes client localStorage cart objects to standard Form parameters
+function handleCheckoutSubmit() {
+    const cart = getCart(); // Retrieve from localStorage
+    const form = document.getElementById('checkout-form');
+    
+    // Clear previously appended dynamic inputs
+    form.querySelectorAll('.temp-checkout-item').forEach(el => el.remove());
+
+    // Iterate through items map and append parallel array fields
+    for (const id in cart) {
+        const item = cart[id];
+        const itemTotal = (item.qty * item.price).toFixed(2);
+
+        appendHiddenField(form, 'menuId', id);
+        appendHiddenField(form, 'itemName', item.name);
+        appendHiddenField(form, 'quantity', item.qty);
+        appendHiddenField(form, 'itemTotal', itemTotal);
+    }
+    form.submit(); // Standard POST trigger to CheckoutServlet
+}
+                        </div>
+                        <div class="algo-info-panel" style="gap: 10px;">
+                            <div class="algo-point" style="padding: 10px;">
+                                <div class="algo-point-title">🔧 Dynamic DOM Injection</div>
+                                Bridges client-side states with HTML Form parameter arrays.
+                            </div>
+                            <div class="screenshot-box" style="flex: 1; min-height: 120px; border-style: dashed; border-width: 2px; padding: 10px;">
+                                <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                                <span class="screenshot-placeholder-icon" style="font-size: 1.2rem; margin-bottom: 2px;">💻</span>
+                                <div class="screenshot-title" style="font-size: 0.85rem;">JavaScript Cart Algorithm</div>
+                                <div class="screenshot-desc" style="font-size: 0.65rem;">Optional: Click to upload code screenshot</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2 Code -->
+                    <div class="algo-content" id="algo-c-1">
+                        <div class="algo-code-box">
+// In CheckoutServlet.java: Stores order rows sequentially across relational tables
+Orders order = new Orders(restaurantId, userId, totalAmount, paymentMode, "Confirmed");
+boolean orderSuccess = orderDAO.placeOrder(order);
+
+if (orderSuccess) {
+    int orderId = -1;
+    // Retrieve newly generated auto-incremented primary key
+    String latestOrderQuery = "SELECT orderId FROM orders WHERE userId = ? ORDER BY orderId DESC LIMIT 1";
+    try (Connection con = DBConnection.getConnection();
+         PreparedStatement pstmt = con.prepareStatement(latestOrderQuery)) {
+        pstmt.setInt(1, userId);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) { orderId = rs.getInt("orderId"); }
+        }
+    }
+    
+    // Insert children order item rows mapping orderId as foreign key
+    for (int i = 0; i < menuIds.length; i++) {
+        OrderItems item = new OrderItems(orderId, Integer.parseInt(menuIds[i]), 
+                                     itemNames[i], Integer.parseInt(quantities[i]), 
+                                     Double.parseDouble(itemTotals[i]));
+        orderItemDAO.addOrderItem(item);
+    }
+}
+                        </div>
+                        <div class="algo-info-panel" style="gap: 10px;">
+                            <div class="algo-point" style="padding: 10px;">
+                                <div class="algo-point-title">🛡️ Foreign Key Integrity</div>
+                                Links child items under the generated order auto-incremented primary key.
+                            </div>
+                            <div class="screenshot-box" style="flex: 1; min-height: 120px; border-style: dashed; border-width: 2px; padding: 10px;">
+                                <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                                <span class="screenshot-placeholder-icon" style="font-size: 1.2rem; margin-bottom: 2px;">☕</span>
+                                <div class="screenshot-title" style="font-size: 0.85rem;">Java Servlet Transaction</div>
+                                <div class="screenshot-desc" style="font-size: 0.65rem;">Optional: Click to upload database code screenshot</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Major Challenge Faced -->
+        <div class="slide" id="slide-8">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>08 · Major Challenge Faced & Resolution</h2>
+                    <p class="slide-subtitle">How a critical architectural bottleneck was solved during backend integration</p>
+                </div>
+                <div class="slide-number">08 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="challenge-layout" style="flex: 0.8; display: flex; flex-direction: column; gap: 15px; height: 100%;">
+                    <div class="challenge-panel left" style="padding: 15px; flex: 1;">
+                        <div class="challenge-panel-header" style="font-size: 1.1rem; padding-bottom: 5px;">
+                            <span class="challenge-icon">⚠️</span>
+                            <span>The State Bridge Bottleneck</span>
+                        </div>
+                        <p class="challenge-body-text" style="font-size: 0.8rem; line-height: 1.4;">
+                            <strong>Problem:</strong> LocalStorage is fast but traditional Java Servlets expect form parameters and cannot parse nested client-side JSON maps without deploying massive third-party parser libraries.
+                        </p>
+                    </div>
+
+                    <div class="challenge-panel right" style="padding: 15px; flex: 1;">
+                        <div class="challenge-panel-header" style="font-size: 1.1rem; padding-bottom: 5px;">
+                            <span class="challenge-icon">✅</span>
+                            <span>Form Array Serialization Solution</span>
+                        </div>
+                        <p class="challenge-body-text" style="font-size: 0.8rem; line-height: 1.4;">
+                            <strong>Resolution:</strong> Engineered a serialization layer. JavaScript loops through cart items, dynamically appends parallel arrays as hidden DOM fields, and submits natively for servlet mapping.
+                        </p>
+                    </div>
+                </div>
+                <div class="screenshot-box has-img" style="flex: 1.2; height: 100%; border-style: solid; border-width: 1px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <img class="screenshot-img-preview" src="screenshots/cart_page.png">
+                    <div class="screenshot-box-label">Challenge: Cart State Caching</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 9: What You'll Add Next -->
+        <div class="slide" id="slide-9">
+            <div class="slide-header">
+                <div class="slide-title-area">
+                    <h2>09 · Project Roadmap</h2>
+                    <p class="slide-subtitle">Future enhancement plans to scale out system capabilities</p>
+                </div>
+                <div class="slide-number">09 / 09</div>
+            </div>
+            <div class="slide-body">
+                <div class="roadmap-layout-vertical" style="flex: 0.8; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; padding-right: 5px;">
+                    <div class="roadmap-card" style="background: var(--card-bg); border: 1px solid var(--border-glass); padding: 12px; border-radius: 12px; text-align: left; flex-shrink: 0;">
+                        <h4 style="color: var(--brand-orange); font-size: 0.95rem; font-weight: 700; margin-bottom: 3px;">💳 Gateway Integration</h4>
+                        <p style="color: var(--text-dim); font-size: 0.78rem; line-height: 1.3;">Replace mock payment parameters with active Razorpay or Stripe API checkouts.</p>
+                    </div>
+                    <div class="roadmap-card" style="background: var(--card-bg); border: 1px solid var(--border-glass); padding: 12px; border-radius: 12px; text-align: left; flex-shrink: 0;">
+                        <h4 style="color: var(--brand-orange); font-size: 0.95rem; font-weight: 700; margin-bottom: 3px;">📍 Live GPS Tracking</h4>
+                        <p style="color: var(--text-dim); font-size: 0.78rem; line-height: 1.3;">WebSocket push notifications mapping live delivery coordinates in real time.</p>
+                    </div>
+                    <div class="roadmap-card" style="background: var(--card-bg); border: 1px solid var(--border-glass); padding: 12px; border-radius: 12px; text-align: left; flex-shrink: 0;">
+                        <h4 style="color: var(--brand-orange); font-size: 0.95rem; font-weight: 700; margin-bottom: 3px;">📊 Admin Portal</h4>
+                        <p style="color: var(--text-dim); font-size: 0.78rem; line-height: 1.3;">Interactive administrator panel to handle active menus, prices, and stock updates.</p>
+                    </div>
+                    <div class="roadmap-card" style="background: var(--card-bg); border: 1px solid var(--border-glass); padding: 12px; border-radius: 12px; text-align: left; flex-shrink: 0;">
+                        <h4 style="color: var(--brand-orange); font-size: 0.95rem; font-weight: 700; margin-bottom: 3px;">🤖 AI Suggestions</h4>
+                        <p style="color: var(--text-dim); font-size: 0.78rem; line-height: 1.3;">Smart food pairings based on user catalog check histories and location demographics.</p>
+                    </div>
+                </div>
+                <div class="screenshot-box" style="flex: 1.2; height: 100%; border-style: dashed; border-width: 2px;">
+                    <input type="file" class="screenshot-file-input" accept="image/*" onchange="previewImage(this)">
+                    <span class="screenshot-placeholder-icon">🚀</span>
+                    <div class="screenshot-title">Roadmap UI Mockup</div>
+                    <div class="screenshot-desc">Click here to upload mockup wireframes or architecture diagrams for future scaling</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- --- APP FOOTER --- -->
+    <footer>
+        <div class="progress-container">
+            <div class="progress-bar" id="presentation-progress"></div>
+        </div>
+        <div class="slide-counter" id="slide-counter-display">Slide 1 of 9</div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="btn-prev" onclick="navigateSlide(-1)">← Previous</button>
+            <button class="nav-btn" id="btn-next" onclick="navigateSlide(1)">Next →</button>
+        </div>
+    </footer>
+
+    <!-- --- CLIENT PRESENTATION CONTROLLER LOGIC --- -->
+    <script>
+        // Slides Navigation Variables
+        let currentSlide = 1;
+        const totalSlides = 9;
+
+        function updateUI() {
+            // Manage Slide visibility classes
+            document.querySelectorAll('.slide').forEach((slide, index) => {
+                if (index === currentSlide - 1) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Adjust navigation buttons states
+            document.getElementById('btn-prev').disabled = (currentSlide === 1);
+            document.getElementById('btn-next').disabled = (currentSlide === totalSlides);
+
+            // Update Progress Bar & Counter text
+            const progressPct = (currentSlide / totalSlides) * 100;
+            document.getElementById('presentation-progress').style.width = progressPct + '%';
+            document.getElementById('slide-counter-display').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+        }
+
+        function navigateSlide(direction) {
+            currentSlide = Math.max(1, Math.min(totalSlides, currentSlide + direction));
+            updateUI();
+        }
+
+        // Support standard keyboard navigation keys
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowRight' || event.key === 'Space' || event.key === 'Enter') {
+                if (currentSlide < totalSlides) navigateSlide(1);
+            } else if (event.key === 'ArrowLeft' || event.key === 'Backspace') {
+                if (currentSlide > 1) navigateSlide(-1);
+            }
+        });
+
+        // Screenshot dynamic preview selector logic
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const box = input.parentElement;
+                    
+                    // Remove existing images if any
+                    const existingImg = box.querySelector('.screenshot-img-preview');
+                    if (existingImg) existingImg.remove();
+                    
+                    const existingLbl = box.querySelector('.screenshot-box-label');
+                    if (existingLbl) existingLbl.remove();
+
+                    // Create new preview image element
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'screenshot-img-preview';
+                    box.appendChild(img);
+
+                    // Add overlay label
+                    const labelText = box.querySelector('.screenshot-title').textContent;
+                    const label = document.createElement('div');
+                    label.className = 'screenshot-box-label';
+                    label.textContent = labelText;
+                    box.appendChild(label);
+
+                    box.classList.add('has-img');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Algorithm Code Tab controller
+        function switchAlgo(tabIndex) {
+            document.querySelectorAll('.algo-tab-btn').forEach((btn, index) => {
+                if (index === tabIndex) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.algo-content').forEach((content, index) => {
+                if (index === tabIndex) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+
+        // Timer Controller Logic
+        let timerSeconds = 240; // 4 minutes
+        let timerInterval = null;
+        let timerRunning = false;
+
+        const timerDisplay = document.getElementById('onscreen-timer');
+        const timerToggle = document.getElementById('timer-toggle-btn');
+        const timerReset = document.getElementById('timer-reset-btn');
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSecs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(remainingSecs).padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTime(Math.abs(timerSeconds));
+            
+            // Adjust threshold alerts classes
+            if (timerSeconds < 0) {
+                // Expired
+                timerDisplay.className = 'timer-display timer-danger';
+                timerDisplay.textContent = '-' + formatTime(Math.abs(timerSeconds));
+            } else if (timerSeconds <= 60) {
+                // Under 1 minute left
+                timerDisplay.className = 'timer-display timer-danger';
+            } else if (timerSeconds <= 120) {
+                // Under 2 minutes left
+                timerDisplay.className = 'timer-display timer-warning';
+            } else {
+                timerDisplay.className = 'timer-display';
+            }
+        }
+
+        function toggleTimer() {
+            if (timerRunning) {
+                // Pause
+                clearInterval(timerInterval);
+                timerToggle.textContent = '▶';
+                timerRunning = false;
+            } else {
+                // Start
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                }, 1000);
+                timerToggle.textContent = '⏸';
+                timerRunning = true;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 240;
+            timerRunning = false;
+            timerToggle.textContent = '▶';
+            updateTimerDisplay();
+        }
+
+        timerToggle.addEventListener('click', toggleTimer);
+        timerReset.addEventListener('click', resetTimer);
+
+        // Initial UI renders
+        updateUI();
+    </script>
+</body>
+</html>
